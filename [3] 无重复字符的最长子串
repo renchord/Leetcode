@@ -1,0 +1,54 @@
+/*Description:
+给定一个字符串，请你找出其中不含有重复字符的 最长子串 的长度。
+
+示例 1:
+
+输入: "abcabcbb"
+输出: 3 
+解释: 因为无重复字符的最长子串是 "abc"，所以其长度为 3。
+示例 2:
+
+输入: "bbbbb"
+输出: 1
+解释: 因为无重复字符的最长子串是 "b"，所以其长度为 1。
+示例 3:
+
+输入: "pwwkew"
+输出: 3
+解释: 因为无重复字符的最长子串是 "wke"，所以其长度为 3。
+     请注意，你的答案必须是 子串 的长度，"pwke" 是一个子序列，不是子串。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/longest-substring-without-repeating-characters
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+
+
+class Solution {
+public:
+    int lengthOfLongestSubstring(string s) {
+        int m[256] = {0}; //创建一个映射，key值为字符串的值，val值为所在位置，第一个是1
+        int res = 0;  //最终结果
+        int left = 0;  //当前不重复字符串的左边界
+        for(int i = 0; i < s.size(); i++)
+        {
+            if(m[s[i]] == 0 || m[s[i]] < left)  //如果这个字符第一次出现，或者该字符出现的位置在left左边
+            {
+                res = max(res, i - left + 1);  //如果i和左边界的距离比res大，更新res，否则保持res
+            }
+            else
+            {
+                left = m[s[i]];  //如果字符已经出现了，且在left的右边，则必须更新left 注意这里并不是m[s[i]] +1，因为Left标记的是左窗口的位置的前一个(闭区间)
+            }
+            m[s[i]] = i + 1; //标记该字符的位置
+        }
+        return res;
+    }
+};
+
+/******
+滑动窗口,left指示左边界,i指示右边界
+如果s[i]从没出现过，将s[i]加入，并且更新res；
+如果s[i]出现过，但不在窗口内，也没关系，继续更新；
+如果在这个窗口内，去掉这个已经出现的数值，直接更新left = m[s[i]]即可；
+****/
