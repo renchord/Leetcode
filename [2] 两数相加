@@ -1,0 +1,77 @@
+/*
+Description:
+给出两个 非空 的链表用来表示两个非负的整数。其中，它们各自的位数是按照 逆序 的方式存储的，并且它们的每个节点只能存储 一位 数字。
+
+如果，我们将这两个数相加起来，则会返回一个新的链表来表示它们的和。
+
+您可以假设除了数字 0 之外，这两个数都不会以 0 开头。
+
+示例：
+
+输入：(2 -> 4 -> 3) + (5 -> 6 -> 4)
+输出：7 -> 0 -> 8
+原因：342 + 465 = 807
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/add-two-numbers
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
+        int carry = 0;   //存储进位标识符
+        int temprst = 0; //存储临时计算结果
+        ListNode* l1Now = l1;  //L1的当前指针
+        ListNode* l2Now = l2;  //L2的当前指针
+        ListNode* rst = new ListNode(-1); //Head 不需要用到，返回rst->next
+        ListNode* rstHead = rst;  //开始迭代
+        int add1, add2;
+        while(l1Now != NULL || l2Now!= NULL) //只要L1的当前指针和L2的当前指针 都不同时为空
+        {
+            if(l1Now == NULL)
+            {
+                add1 = 0;
+            }
+            else
+            {
+                add1 = l1Now->val;
+            }
+            if(l2Now == NULL)
+            {
+                add2 = 0;
+            }
+            else
+            {
+                add2 = l2Now->val;
+            }
+
+            temprst = add1 + add2 + carry;  //需考虑之前的进位
+            carry = temprst / 10;
+            rstHead->next = new ListNode(temprst % 10);  //真正的头
+            rstHead = rstHead->next;
+            if(l1Now != NULL)
+            {
+                l1Now = l1Now->next;
+            }
+            if(l2Now != NULL)
+            {
+                l2Now = l2Now->next;
+            }
+        }
+        if(carry == 1)  //当L1当前指针和L2当前指针都为空迭代结束 有一种可能是进位还在，需要特殊处理
+        {
+            rstHead->next = new ListNode(1);
+        }
+        return rst->next;
+        
+    }
+};
