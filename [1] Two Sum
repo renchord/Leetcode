@@ -23,22 +23,22 @@ Description :
 class Solution {
 public:
     vector<int> twoSum(vector<int>& nums, int target) {
-        unordered_map<int,int> mapping;  
-        vector<int>rst;
+        unordered_map<int,int> mapping;  //创建 无序哈希表
+        vector<int>rst;    //创建 存储结果的向量
 
         for(int i = 0; i < nums.size(); i++)
         {
-            mapping[nums[i]] = i;
+            mapping[nums[i]] = i;    //实现从 nums[i] -> i 的映射 key值为nums[i],val值为i
         }
 
         for(int i = 0; i < nums.size(); i++)
         {
-            const int gap = target - nums[i];
-            if(mapping.find(gap) != mapping.end() && mapping[gap] > i)
+            const int gap = target - nums[i];   //计算gap = 目标数 - 当前key值
+            if(mapping.find(gap) != mapping.end() && mapping[gap] > i)  //gap是否在哈希表中,且对应的val值比当前i大(避免重复)
             {
-                rst.push_back(i);
+                rst.push_back(i);   //i和gap的key值存到rst中
                 rst.push_back(mapping[gap]);
-                break;
+                break;  //假设只有一对这样的答案 直接结束
             }
         }
         return rst;
