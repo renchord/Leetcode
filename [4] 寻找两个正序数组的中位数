@@ -1,0 +1,61 @@
+/*
+给定两个大小为 m 和 n 的正序（从小到大）数组 nums1 和 nums2。
+
+请你找出这两个正序数组的中位数，并且要求算法的时间复杂度为 O(log(m + n))。
+
+你可以假设 nums1 和 nums2 不会同时为空。
+
+ 
+
+示例 1:
+
+nums1 = [1, 3]
+nums2 = [2]
+
+则中位数是 2.0
+示例 2:
+
+nums1 = [1, 2]
+nums2 = [3, 4]
+
+则中位数是 (2 + 3)/2 = 2.5
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/median-of-two-sorted-arrays
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+
+class Solution {
+public:
+    double findMedianSortedArrays(vector<int>& A, vector<int>& B) {
+        int total=A.size()+B.size();
+        int m=A.size();
+        int n=B.size();
+        if(total &0x01 )
+            return  find_kth(A.begin(),m,B.begin(),n,total/2+1);
+        else
+            return (find_kth(A.begin(),m,B.begin(),n,total/2)+find_kth(A.begin(),m,B.begin(),n,total/2+1))/2.0;
+        
+    }
+    private:
+    static int find_kth(std::vector<int>::const_iterator A,int m,std::vector<int>::const_iterator B,int n,int k)
+    {
+        if (m>n)
+            return find_kth(B,n,A,m,k);
+        if (m==0)
+            return *(B+k-1);
+        if (k==1)
+            return min(*(A+k-1),*(B+k-1));
+        //divide the k into two parts
+        int ia=min(k/2,m);//the fisrt part
+        int ib=k-ia;//the second part
+        
+        if(*(A+ia-1)<*(B+ib-1))
+            return find_kth(A+ia,m-ia,B,n,k-ia);
+        else if (*(A+ia-1)>*(B+ib-1))
+            return find_kth(A,m,B+ib,n-ib,k-ib);
+        else
+            return *(A+ia-1);
+    }
+};
+
