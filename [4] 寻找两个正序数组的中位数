@@ -27,35 +27,55 @@ nums2 = [3, 4]
 
 class Solution {
 public:
-    double findMedianSortedArrays(vector<int>& A, vector<int>& B) {
-        int total=A.size()+B.size();
-        int m=A.size();
-        int n=B.size();
-        if(total &0x01 )
-            return  find_kth(A.begin(),m,B.begin(),n,total/2+1);
-        else
-            return (find_kth(A.begin(),m,B.begin(),n,total/2)+find_kth(A.begin(),m,B.begin(),n,total/2+1))/2.0;
-        
+    double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+        int TotalLength = nums1.size() + nums2.size();
+        int Asize = nums1.size();
+        int Bsize = nums2.size();
+        if(TotalLength & 0x01 ) //奇数情况
+        {
+            return find_k_th(nums1.begin(), Asize, nums2.begin(), Bsize, TotalLength/2 + 1);
+        }
+        else // 偶数情况
+        {
+            return (find_k_th(nums1.begin(), Asize, nums2.begin(), Bsize, TotalLength/2) + find_k_th(nums1.begin(), Asize, nums2.begin(), Bsize, TotalLength/2 + 1)) / 2.0;
+        }
     }
-    private:
-    static int find_kth(std::vector<int>::const_iterator A,int m,std::vector<int>::const_iterator B,int n,int k)
+
+    static int find_k_th(std::vector<int>::const_iterator nums1, int Asize, std::vector<int>::const_iterator nums2, int Bsize, int k)
     {
-        if (m>n)
-            return find_kth(B,n,A,m,k);
-        if (m==0)
-            return *(B+k-1);
-        if (k==1)
-            return min(*(A+k-1),*(B+k-1));
-        //divide the k into two parts
-        int ia=min(k/2,m);//the fisrt part
-        int ib=k-ia;//the second part
+        //判断终止和倒换迭代条件
+        if(Asize > Bsize)  //默认A更小一点 否则反过来操作
+        {
+            return find_k_th(nums2, Bsize, nums1, Asize, k);
+        }
+        if(0 == Asize)  //如果A的大小为0了，则返回B的第K个数即可，而第K个数的索引即为 k-1
+        {
+            return *(nums2 + k - 1);
+        }
+        if(1 == k) //如果 k = 1， 则返回A和B的索引目前的值中较小的一个即可
+        {
+            return min(*(nums1),*(nums2));
+        }
+
+        //如果都不满足，则K是一个>= 2的数，且Asize Bsize都不为0， 且A不为空
+        //假设A序列和B序列分别需要去掉的长度为ia、ib,则 k = ia + ib;
+        //ia = min(Asize,k/2);
+        //理解 假设k = 7 ,则 k/2 = 3, 假设A Bsize远远大于这个数， 则ia = 3 , ib = 4， 需要比较 A的第三个数与B的第四个数之间的大小
+        //如果A的大一些，那么B的前ib个数都能丢掉，反之A的前ia个数能丢掉
+        int ia = min(Asize,k/2);
+        int ib = k - ia;
         
-        if(*(A+ia-1)<*(B+ib-1))
-            return find_kth(A+ia,m-ia,B,n,k-ia);
-        else if (*(A+ia-1)>*(B+ib-1))
-            return find_kth(A,m,B+ib,n-ib,k-ib);
-        else
-            return *(A+ia-1);
+        if(*(nums1 + ia - 1) > *(nums2 + ib - 1))
+        {
+            return find_k_th(nums1 , Asize, nums2 + ib, Bsize - ib, k - ib);
+        }
+        else if (*(nums1 + ia - 1) < *(nums2 + ib - 1))
+        {
+            return find_k_th(nums1 + ia, Asize - ia, nums2, Bsize, k - ia);
+        }
+        else //如果 两个数相等
+        {
+            return *(nums2 + ib - 1);
+        }
     }
 };
-
