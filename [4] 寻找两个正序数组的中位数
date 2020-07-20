@@ -79,3 +79,46 @@ public:
         }
     }
 };
+
+
+/* 另外一种题解 */
+/* 中位数就是有序数组分成长度相等的两端，中位数是前半段最大值和后半段最小值的平均数，假设数组长度为N，则满足 Idx(L) = [(N-1)/2]; Idx(R) = [N/2]
+对每个数字的两边都加上一个特殊字符，例如 #，则数组长度都会变成2N+1，奇数，则保证切割点的位置也是确定的；
+newN = 2 * N + 1; 则Idx(L) = [(N-1)/2]; Idx(R) = [N/2] 中的N可以换成切割点的位置；
+总共有 2N1 + 2N2 +2 个数字，除去分割点外，左右分别有 N1 + N2 个数字；假设C2 ，则C1 = N1 + N2 - C2;
+L1 = (C1 - 1)/2; R1 = C1/2; L2 = (C2 - 1)/2 ; R2 = C2/2;
+需要满足 L1 <= R2 && L2 <= R1
+若L1 > R2 则说明A1左边的数字过大了, C1需要往左移动；
+若L2 > R1 则说明A2左边的数字过大了，C2需要往左移动；
+二分法求位置即可，可从小一点的数组开始做 */
+
+
+class Solution {
+public:
+    double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+        int m = nums1.size();  //A1长度
+        int n = nums2.size();  //A2长度
+        if(m < n)
+            return findMedianSortedArrays(nums2, nums1);  //大的在前，小的在后
+        if(0 == n)  //如果小的没有了，则直接返回第一个的中位数
+            return ((double)nums1[(m - 1) / 2] + (double)nums1[m / 2]) / 2.0;
+        int left = 0, right = n * 2;
+        while(left <= right)  //二分搜索
+        {
+            int mid2 = (left + right) / 2;  //先从第二个的中间开始搜
+            int mid1 = m + n - mid2;  //一旦确定C2 ，则可得到C1
+            double L1 = mid1 == 0 ? INT_MIN : nums1[(mid1 - 1)/ 2];  //根据C1 C2 来计算 L1 L2 R1 R2 
+            double L2 = mid2 == 0 ? INT_MIN : nums2[(mid2 - 1)/ 2];  //需要注意的是，如果切割点等于0，则代表这个数组的所有数都不能被排除
+            double R1 = mid1 == m * 2 ? INT_MAX : nums1[mid1 / 2];   //如果切割点等于上限，则这个数组目前所有的数都可以排除
+            double R2 = mid2 == n * 2 ? INT_MAX : nums2[mid2 / 2];
+
+            if(L1 > R2)
+                left = mid2 + 1;    //L1  > R2 means C1 needs turn left, C1 decrease by add C2
+            else if (L2 > R1)
+                right = mid2 - 1;   //C2 needs decrease
+            else return (max(L1, L2) + min(R1, R2)) / 2; 
+        }
+        return -1;
+    }
+};
+
