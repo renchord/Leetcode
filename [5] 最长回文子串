@@ -1,0 +1,43 @@
+给定一个字符串 s，找到 s 中最长的回文子串。你可以假设 s 的最大长度为 1000。
+
+示例 1：
+
+输入: "babad"
+输出: "bab"
+注意: "aba" 也是一个有效答案。
+示例 2：
+
+输入: "cbbd"
+输出: "bb"
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/longest-palindromic-substring
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+class Solution {
+public:
+    string longestPalindrome(string s) {
+ 
+        if(s.empty())
+            return "";
+        const int n = s.size();
+        int dp[1001][1001] = {0};
+        int left = 0;
+        int len = 1;
+        for(int i = 0; i < s.size(); i++)
+        {
+            dp[i][i] = 1;  //dp[i][j]表示 从i到j的字串是不是回文串，显然dp[i][i] = 1
+            for(int j = 0; j < i; j++)
+            {
+                dp[j][i] = (s[i] == s[j]  && ((i - j < 2) || dp[j + 1][i - 1] ));  //dp[j][i]是否为1 == （dp[j+1]dp[j-1]为1 或 ij差距为1 ）
+                                                                                   //且 s[i] == s[j]
+                if(dp[j][i] && len < i - j + 1)  //更新长度和 起始位置
+                {
+                    len = i - j + 1;
+                    left = j;
+                }    
+            }
+        }
+       return s.substr(left,len);
+    }
+};
